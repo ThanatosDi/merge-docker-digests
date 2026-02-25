@@ -1,0 +1,69 @@
+name: 'Merge Multi-Arch Manifest'
+description: 'Merge multi-architecture Docker image digests into a single manifest'
+author: 'thanatosdi'
+
+inputs:
+  image-name:
+    description: 'Full image name (e.g., ghcr.io/user/repo or user/repo for Docker Hub)'
+    required: true
+  artifact-pattern:
+    description: 'Pattern to match digest artifacts (e.g., digest-*)'
+    required: true
+  tags:
+    description: 'Tags to apply, separated by newlines'
+    required: true
+  timezone:
+    description: 'Timezone for date tag'
+    required: false
+    default: 'UTC'
+  registry:
+    description: 'Container registry (e.g., ghcr.io, docker.io). Leave empty for Docker Hub'
+    required: false
+    default: ''
+  registry-username:
+    description: 'Registry username'
+    required: true
+  registry-password:
+    description: 'Registry password or access token'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download Digests
+      uses: actions/download-artifact@v4
+      with:
+        path: /tmp/digests
+        pattern: ${{ inputs.artifact-pattern }}
+        merge-multiple: true
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ inputs.registry || '' }}
+        username: ${{ inputs.registry-username }}
+        password: ${{ inputs.registry-password }}
+
+    - name: Create and Push Manifest
+      shell: bash
+      working-directory: /tmp/digests
+      run: |
+        # 將 tags 轉換成 -t 參數
+        TAGS=""
+        while IFS= read -r tag; do
+          [ -n "$tag" ] && TAGS="$TAGS -t ${{ inputs.image-name }}:$tag"
+        done <<< "${{ inputs.tags }}"
+
+        # 合併所有 digest 並推送
+        docker buildx imagetools create $TAGS \
+          $(printf '${{ inputs.image-name }}@sha256:%s ' *)
+
+    - name: Inspect Image
+      shell: bash
+      run: |
+        # 取第一個 tag 來檢查
+        FIRST_TAG=$(echo "${{ inputs.tags }}" | head -n1)
+        docker buildx imagetools inspect ${{ inputs.image-name }}:$FIRST_TAG

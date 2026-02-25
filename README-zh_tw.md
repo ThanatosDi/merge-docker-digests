@@ -1,18 +1,18 @@
 # merge-docker-digest
 
-GitHub Action for merging multi-architecture Docker image digests into a single manifest.
+用於將多架構 Docker 映像 digest 合併為單一 manifest 的 GitHub Action。
 
-## Overview
+## 概述
 
-When building Docker images for multiple architectures (e.g., amd64, arm64), each build produces a separate digest. This action merges those digests into a unified multi-arch manifest, allowing users to `docker pull` and automatically receive the correct image for their architecture.
+在為多種架構（例如 amd64、arm64）建置 Docker 映像時，每次建置都會產生獨立的 digest。此 action 會將這些 digest 合併為統一的多架構 manifest，讓使用者執行 `docker pull` 時能自動取得對應其架構的映像。
 
-## Features
+## 功能特點
 
-- Supports multiple container registries (Docker Hub, GHCR, and others)
-- Merges digests from parallel builds into a single manifest
-- Applies multiple tags to the merged image
+- 支援多種容器倉庫（Docker Hub、GHCR 及其他）
+- 將平行建置的 digest 合併為單一 manifest
+- 可為合併後的映像套用多個標籤
 
-## Usage
+## 使用方式
 
 ```yaml
 - name: Merge Manifest
@@ -27,19 +27,19 @@ When building Docker images for multiple architectures (e.g., amd64, arm64), eac
     registry-password: ${{ secrets.DOCKERHUB_TOKEN }}
 ```
 
-### Inputs
+### 輸入參數
 
-| Name | Required | Default | Description |
-|------|----------|---------|-------------|
-| `image-name` | Yes | - | Full image name (e.g., `ghcr.io/user/repo` or `user/repo` for Docker Hub) |
-| `artifact-pattern` | Yes | - | Pattern to match digest artifacts (e.g., `digest-*`) |
-| `tags` | Yes | - | Tags to apply, separated by newlines |
-| `timezone` | No | `UTC` | Timezone for date-based tags |
-| `registry` | No | `''` | Container registry URL (e.g., `ghcr.io`, `docker.io`). Leave empty for Docker Hub |
-| `registry-username` | Yes | - | Registry username |
-| `registry-password` | Yes | - | Registry password or access token |
+| 名稱 | 必填 | 預設值 | 說明 |
+|------|------|--------|------|
+| `image-name` | 是 | - | 完整映像名稱（例如 `ghcr.io/user/repo` 或 Docker Hub 的 `user/repo`） |
+| `artifact-pattern` | 是 | - | 用於匹配 digest artifact 的 pattern（例如 `digest-*`） |
+| `tags` | 是 | - | 要套用的標籤，以換行分隔 |
+| `timezone` | 否 | `UTC` | 日期標籤的時區 |
+| `registry` | 否 | `''` | 容器倉庫 URL（例如 `ghcr.io`、`docker.io`）。Docker Hub 請留空 |
+| `registry-username` | 是 | - | 倉庫使用者名稱 |
+| `registry-password` | 是 | - | 倉庫密碼或存取權杖 |
 
-## Examples
+## 範例
 
 ### Docker Hub
 
@@ -175,19 +175,14 @@ jobs:
           registry-password: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-## How It Works
+## 運作原理
 
-1. **Download Digests**: Fetches all digest artifacts matching the specified pattern
-2. **Setup Buildx**: Configures Docker Buildx for manifest manipulation
-3. **Login**: Authenticates with the specified container registry
-4. **Create Manifest**: Uses `docker buildx imagetools create` to merge all digests into a multi-arch manifest with the specified tags
-5. **Inspect**: Verifies the created manifest
+1. **下載 Digests**：取得所有符合指定 pattern 的 digest artifacts
+2. **設定 Buildx**：配置 Docker Buildx 以進行 manifest 操作
+3. **登入**：向指定的容器倉庫進行身份驗證
+4. **建立 Manifest**：使用 `docker buildx imagetools create` 將所有 digest 合併為多架構 manifest，並套用指定的標籤
+5. **檢查**：驗證已建立的 manifest
 
-## License
+## 授權條款
 
-See [LICENSE](LICENSE) for details.
-
----
-
-> Translated with AI
-
+詳見 [LICENSE](LICENSE)。
