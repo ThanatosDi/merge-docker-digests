@@ -1,34 +1,34 @@
-name: 'Merge Multi-Arch Manifest'
-description: 'Merge multi-architecture Docker image digests into a single manifest'
-author: 'thanatosdi'
+name: "Merge Multi-Arch Manifest"
+description: "Merge multi-architecture Docker image digests into a single manifest"
+author: "thanatosdi"
 
 inputs:
   image-name:
-    description: 'Full image name (e.g., ghcr.io/user/repo or user/repo for Docker Hub)'
+    description: "Full image name (e.g., ghcr.io/user/repo or user/repo for Docker Hub)"
     required: true
   artifact-pattern:
-    description: 'Pattern to match digest artifacts (e.g., digest-*)'
+    description: "Pattern to match digest artifacts (e.g., digest-*)"
     required: true
   tags:
-    description: 'Tags to apply, separated by newlines'
+    description: "Tags to apply, separated by newlines"
     required: true
   timezone:
-    description: 'Timezone for date tag'
+    description: "Timezone for date tag"
     required: false
-    default: 'UTC'
+    default: "UTC"
   registry:
-    description: 'Container registry (e.g., ghcr.io, docker.io). Leave empty for Docker Hub'
+    description: "Container registry (e.g., ghcr.io, docker.io). Leave empty for Docker Hub"
     required: false
-    default: ''
+    default: ""
   registry-username:
-    description: 'Registry username'
+    description: "Registry username"
     required: true
   registry-password:
-    description: 'Registry password or access token'
+    description: "Registry password or access token"
     required: true
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Download Digests
       uses: actions/download-artifact@v4
@@ -51,15 +51,31 @@ runs:
       shell: bash
       working-directory: /tmp/digests
       run: |
-        # 將 tags 轉換成 -t 參數
+        set -euo pipefail
+
+        echo "=== Debug: 列出目錄內容 ==="
+        ls -la
+
+        echo "=== Debug: 檔案數量 ==="
+        file_count=$(ls -1 | wc -l)
+        echo "找到 $file_count 個 digest 檔案"
+
+        if [ "$file_count" -eq 0 ]; then
+          echo "錯誤：沒有找到任何 digest 檔案！"
+          exit 1
+        fi
+
         TAGS=""
         while IFS= read -r tag; do
           [ -n "$tag" ] && TAGS="$TAGS -t ${{ inputs.image-name }}:$tag"
         done <<< "${{ inputs.tags }}"
 
-        # 合併所有 digest 並推送
+        echo "=== Debug: 將套用的 tags ==="
+        echo "$TAGS"
+
+        echo "=== 執行 imagetools create ==="
         docker buildx imagetools create $TAGS \
-          $(printf '${{ inputs.image-name }}@sha256:%s ' *)
+        $(printf '${{ inputs.image-name }}@sha256:%s ' *)
 
     - name: Inspect Image
       shell: bash
