@@ -21,10 +21,10 @@ inputs:
     required: false
     default: ""
   registry-username:
-    description: "Registry username"
+    description: "Registry username (⚠️ Always pass via secrets! For GHCR, use github.actor)"
     required: true
   registry-password:
-    description: "Registry password or access token"
+    description: "Registry password/token (⚠️ Always pass via secrets! For GHCR, use secrets.GITHUB_TOKEN)"
     required: true
 
 runs:

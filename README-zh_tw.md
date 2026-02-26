@@ -36,8 +36,8 @@
 | `tags` | 是 | - | 要套用的標籤，以換行分隔 |
 | `timezone` | 否 | `UTC` | 日期標籤的時區 |
 | `registry` | 否 | `''` | 容器倉庫 URL（例如 `ghcr.io`、`docker.io`）。Docker Hub 請留空 |
-| `registry-username` | 是 | - | 倉庫使用者名稱 |
-| `registry-password` | 是 | - | 倉庫密碼或存取權杖 |
+| `registry-username` | 是 | - | 倉庫使用者名稱（⚠️ 請務必透過 secrets 傳入！GHCR 可使用 `github.actor`） |
+| `registry-password` | 是 | - | 倉庫密碼或存取權杖（⚠️ 請務必透過 secrets 傳入！GHCR 可使用 `secrets.GITHUB_TOKEN`） |
 
 ## 範例
 

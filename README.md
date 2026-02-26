@@ -36,8 +36,8 @@ When building Docker images for multiple architectures (e.g., amd64, arm64), eac
 | `tags` | Yes | - | Tags to apply, separated by newlines |
 | `timezone` | No | `UTC` | Timezone for date-based tags |
 | `registry` | No | `''` | Container registry URL (e.g., `ghcr.io`, `docker.io`). Leave empty for Docker Hub |
-| `registry-username` | Yes | - | Registry username |
-| `registry-password` | Yes | - | Registry password or access token |
+| `registry-username` | Yes | - | Registry username (⚠️ Always pass via secrets! For GHCR, use `github.actor`) |
+| `registry-password` | Yes | - | Registry password/token (⚠️ Always pass via secrets! For GHCR, use `secrets.GITHUB_TOKEN`) |
 
 ## Examples
 
