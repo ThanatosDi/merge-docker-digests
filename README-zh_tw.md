@@ -1,4 +1,4 @@
-# merge-docker-digest
+# merge-images-digest
 
 用於將多架構 Docker 映像 digest 合併為單一 manifest 的 GitHub Action。
 
