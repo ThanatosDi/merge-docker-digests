@@ -1,4 +1,4 @@
-# merge-docker-digest
+# merge-images-digest
 
 GitHub Action for merging multi-architecture Docker image digests into a single manifest.
 
